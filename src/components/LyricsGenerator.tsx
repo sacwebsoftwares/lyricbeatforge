@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import OpenAI from 'openai';
+import { createClient } from '@supabase/supabase-js';
 
 interface LyricsGeneratorProps {
   audioFile: File | null;
@@ -24,8 +25,23 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
 
     setIsGenerating(true);
     try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
+
+      const { data: secretData, error: secretError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'OPENAI_API_KEY')
+        .single();
+
+      if (secretError || !secretData) {
+        throw new Error('Failed to fetch OpenAI API key');
+      }
+
       const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey: secretData.value,
         dangerouslyAllowBrowser: true
       });
 
