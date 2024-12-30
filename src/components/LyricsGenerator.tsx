@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import OpenAI from 'openai';
 
 interface LyricsGeneratorProps {
   audioFile: File | null;
@@ -23,20 +24,41 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
 
     setIsGenerating(true);
     try {
-      // Here we'll integrate with OpenAI API
-      // For now, we'll simulate the API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const sampleLyrics = "This is where the AI-generated lyrics will appear.\nConnect OpenAI to get real lyrics generation.";
-      setLyrics(sampleLyrics);
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+        dangerouslyAllowBrowser: true
+      });
+
+      // Create a prompt based on the audio file name and type
+      const prompt = `Generate creative song lyrics based on a ${audioFile.type} file named "${audioFile.name}". The lyrics should be modern, engaging, and follow a typical song structure with verses and a chorus. Consider the filename for thematic inspiration.`;
+
+      const completion = await openai.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content: "You are a creative songwriter who specializes in writing engaging and meaningful lyrics."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        model: "gpt-4",
+        temperature: 0.7,
+      });
+
+      const generatedLyrics = completion.choices[0]?.message?.content || "No lyrics were generated";
+      setLyrics(generatedLyrics);
       
       toast({
         title: "Lyrics generated",
         description: "Your lyrics have been generated successfully",
       });
     } catch (error) {
+      console.error('Error generating lyrics:', error);
       toast({
         title: "Error",
-        description: "Failed to generate lyrics",
+        description: "Failed to generate lyrics. Please check your OpenAI API key.",
         variant: "destructive",
       });
     } finally {
