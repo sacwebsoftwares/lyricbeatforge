@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import AudioUploader from '../components/AudioUploader';
 import WaveformVisualizer from '../components/WaveformVisualizer';
-import { useToast } from '@/components/ui/use-toast';
+import LyricsGenerator from '../components/LyricsGenerator';
 import { Music2 } from 'lucide-react';
 
 const Index = () => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const { toast } = useToast();
 
   const handleFileSelect = (file: File) => {
     setAudioFile(file);
-    toast({
-      title: "Audio file uploaded",
-      description: `Successfully loaded: ${file.name}`,
-    });
   };
 
   return (
@@ -28,7 +23,10 @@ const Index = () => {
           {!audioFile ? (
             <AudioUploader onFileSelect={handleFileSelect} />
           ) : (
-            <WaveformVisualizer audioFile={audioFile} />
+            <>
+              <WaveformVisualizer audioFile={audioFile} />
+              <LyricsGenerator audioFile={audioFile} />
+            </>
           )}
         </div>
       </div>
