@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload } from 'lucide-react';
+import { Upload, Music } from 'lucide-react';
 
 interface AudioUploaderProps {
   onFileSelect: (file: File) => void;
@@ -24,18 +24,20 @@ const AudioUploader = ({ onFileSelect }: AudioUploaderProps) => {
   return (
     <div
       {...getRootProps()}
-      className="w-full p-8 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 hover:border-accent
-                 bg-black/10 backdrop-blur-lg border-white/20 hover:border-accent/50"
+      className="w-full p-8 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300
+                 bg-[#282828] hover:bg-[#3E3E3E] border-[#535353] hover:border-[#1DB954]"
     >
       <input {...getInputProps()} />
-      <div className="flex flex-col items-center justify-center text-white/80">
-        <Upload className="w-12 h-12 mb-4" />
-        <p className="text-lg font-medium">
+      <div className="flex flex-col items-center justify-center text-[#B3B3B3]">
+        <div className="p-4 mb-4 rounded-full bg-[#1DB954]">
+          <Music className="w-8 h-8 text-black" />
+        </div>
+        <p className="text-lg font-medium text-white">
           {isDragActive
             ? "Drop your audio file here"
-            : "Drag & drop your audio file here or click to select"}
+            : "Choose an audio file or drag & drop it here"}
         </p>
-        <p className="mt-2 text-sm text-white/60">Supports MP3 and WAV files</p>
+        <p className="mt-2 text-sm">Supports MP3 and WAV files</p>
       </div>
     </div>
   );

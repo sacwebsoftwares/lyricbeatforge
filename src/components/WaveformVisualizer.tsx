@@ -16,13 +16,14 @@ const WaveformVisualizer = ({ audioFile }: WaveformVisualizerProps) => {
 
     wavesurferRef.current = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: '#00E5FF',
-      progressColor: '#4A148C',
-      cursorColor: '#ffffff',
+      waveColor: '#535353',
+      progressColor: '#1DB954',
+      cursorColor: '#1DB954',
       barWidth: 2,
       barGap: 1,
       height: 100,
       normalize: true,
+      backgroundColor: 'transparent',
     });
 
     const audioUrl = URL.createObjectURL(audioFile);
@@ -50,20 +51,20 @@ const WaveformVisualizer = ({ audioFile }: WaveformVisualizerProps) => {
   };
 
   return (
-    <div className="w-full p-6 rounded-lg bg-black/20 backdrop-blur-lg">
+    <div className="w-full p-6 rounded-lg bg-[#282828]">
       <div ref={containerRef} className="mb-4" />
       <div className="flex justify-center gap-4">
         <button
           onClick={togglePlayPause}
-          className="p-3 rounded-full bg-accent hover:bg-accent/80 transition-colors"
+          className="p-3 rounded-full bg-[#1DB954] hover:bg-[#1ed760] transition-colors"
         >
-          {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+          {isPlaying ? <Pause className="w-6 h-6 text-black" /> : <Play className="w-6 h-6 text-black" />}
         </button>
         <button
           onClick={restart}
-          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          className="p-3 rounded-full bg-[#535353] hover:bg-[#636363] transition-colors"
         >
-          <RotateCcw className="w-6 h-6" />
+          <RotateCcw className="w-6 h-6 text-white" />
         </button>
       </div>
     </div>

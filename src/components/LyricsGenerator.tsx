@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save } from 'lucide-react';
 import OpenAI from 'openai';
-import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 interface LyricsGeneratorProps {
@@ -114,7 +113,7 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
       <button
         onClick={generateLyrics}
         disabled={isGenerating || !audioFile}
-        className="w-full px-4 py-2 font-semibold text-white transition-colors rounded-lg bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full px-4 py-3 font-semibold text-black transition-colors rounded-full bg-[#1DB954] hover:bg-[#1ed760] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isGenerating ? (
           <span className="flex items-center justify-center gap-2">
@@ -127,13 +126,13 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
       </button>
       
       {lyrics && (
-        <div className="p-4 space-y-4 rounded-lg bg-black/20 backdrop-blur-lg">
+        <div className="p-6 space-y-4 rounded-lg bg-[#282828]">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">Generated Lyrics:</h3>
+            <h3 className="text-lg font-semibold text-white">Generated Lyrics</h3>
             <button
               onClick={saveLyrics}
               disabled={isSaving}
-              className="flex items-center gap-2 px-3 py-1 text-sm font-medium text-white transition-colors rounded-md bg-accent hover:bg-accent/80 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-black transition-colors rounded-full bg-[#1DB954] hover:bg-[#1ed760] disabled:opacity-50"
             >
               {isSaving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -143,7 +142,7 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
               Save Lyrics
             </button>
           </div>
-          <pre className="whitespace-pre-wrap text-white/90">{lyrics}</pre>
+          <pre className="whitespace-pre-wrap text-[#B3B3B3]">{lyrics}</pre>
         </div>
       )}
     </div>
