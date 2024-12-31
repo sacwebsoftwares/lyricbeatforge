@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LyricsGeneratorProps {
   audioFile: File | null;
@@ -11,6 +12,7 @@ interface LyricsGeneratorProps {
 const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
   const [lyrics, setLyrics] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   const generateLyrics = async () => {
@@ -25,11 +27,6 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
 
     setIsGenerating(true);
     try {
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
-
       const { data: secretData, error: secretError } = await supabase
         .from('secrets')
         .select('value')
@@ -45,7 +42,6 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
         dangerouslyAllowBrowser: true
       });
 
-      // Create a prompt based on the audio file name and type
       const prompt = `Generate creative song lyrics based on a ${audioFile.type} file named "${audioFile.name}". The lyrics should be modern, engaging, and follow a typical song structure with verses and a chorus. Consider the filename for thematic inspiration.`;
 
       const completion = await openai.chat.completions.create({
@@ -82,6 +78,37 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
     }
   };
 
+  const saveLyrics = async () => {
+    if (!lyrics || !audioFile) return;
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('lyrics')
+        .insert({
+          audio_file_name: audioFile.name,
+          lyrics_text: lyrics,
+          user_id: (await supabase.auth.getUser()).data.user?.id
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Lyrics saved",
+        description: "Your lyrics have been saved successfully",
+      });
+    } catch (error) {
+      console.error('Error saving lyrics:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save lyrics. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       <button
@@ -100,8 +127,22 @@ const LyricsGenerator = ({ audioFile }: LyricsGeneratorProps) => {
       </button>
       
       {lyrics && (
-        <div className="p-4 space-y-2 rounded-lg bg-black/20 backdrop-blur-lg">
-          <h3 className="text-lg font-semibold text-white">Generated Lyrics:</h3>
+        <div className="p-4 space-y-4 rounded-lg bg-black/20 backdrop-blur-lg">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-white">Generated Lyrics:</h3>
+            <button
+              onClick={saveLyrics}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-3 py-1 text-sm font-medium text-white transition-colors rounded-md bg-accent hover:bg-accent/80 disabled:opacity-50"
+            >
+              {isSaving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Save Lyrics
+            </button>
+          </div>
           <pre className="whitespace-pre-wrap text-white/90">{lyrics}</pre>
         </div>
       )}
