@@ -23,7 +23,6 @@ const WaveformVisualizer = ({ audioFile }: WaveformVisualizerProps) => {
       barGap: 1,
       height: 100,
       normalize: true,
-      backgroundColor: 'transparent',
     });
 
     const audioUrl = URL.createObjectURL(audioFile);
